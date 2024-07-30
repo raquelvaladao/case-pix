@@ -1,0 +1,8 @@
+spring:
+  mvc:
+    locale: en
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
