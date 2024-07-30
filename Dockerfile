@@ -6,6 +6,7 @@ COPY pom.xml mvnw ./
 COPY .mvn .mvn
 COPY ./src ./src
 
+RUN chmod +x mvnw
 RUN ./mvnw package -Dmaven.test.skip=true
 
 FROM openjdk:17-jdk-slim
