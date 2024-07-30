@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest
-class DemoApplicationTests {
+class ApplicationTests {
 
 	@Test
 	void contextLoads() {
@@ -15,7 +15,7 @@ class DemoApplicationTests {
 
 	@Test
 	public void main() {
-		DemoApplication.main(new String[] {});
+		Application.main(new String[] {});
 	}
 
 }

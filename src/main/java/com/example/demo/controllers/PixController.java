@@ -8,6 +8,7 @@ import com.example.demo.dtos.PixKeyIdDTO;
 import com.example.demo.dtos.PixKeyRequestDTO;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;

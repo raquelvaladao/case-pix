@@ -1,0 +1,21 @@
+<configuration debug="false">
+    <logger name="ch.qos.logback.classic.util.ContextInitializer" level="ERROR"/>
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeContext>false</includeContext>
+            <includeCallerData>true</includeCallerData>
+            <fieldNames>
+                <levelValue>[ignore]</levelValue>
+                <logger>[ignore]</logger>
+                <callerClass>[ignore]</callerClass>
+                <callerFile>callerClass</callerFile>
+                <callerMethod>callerMethod</callerMethod>
+                <callerLine>atLine</callerLine>
+            </fieldNames>
+            <timestampPattern>dd-MM-yyyy'T'HH:mm:ss</timestampPattern>
+        </encoder>
+    </appender>
+    <root level="INFO">
+        <appender-ref ref="console"/>
+    </root>
+</configuration>

@@ -6,6 +6,9 @@ spring:
     password: ${DB_PASS:sa}
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate:
+        format_sql: false
   h2:
     console.enabled: true
 
