@@ -22,9 +22,9 @@ public class PixKeyResponseDTO {
 
     private String accountType;
 
-    private Integer agencyNumber;
+    private String agencyNumber;
 
-    private Integer accountNumber;
+    private String accountNumber;
 
     private String holderName;
 

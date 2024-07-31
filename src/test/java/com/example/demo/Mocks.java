@@ -7,7 +7,7 @@ import com.example.demo.core.models.PixKey;
 public class Mocks {
 
     public static Holder buildHolderEntity() {
-        HolderId id = new HolderId(12,123123);
+        HolderId id = new HolderId("12","123123");
         Holder entity = new Holder();
         entity.setHolderSurname("Joao");
         entity.setHolderId(id);

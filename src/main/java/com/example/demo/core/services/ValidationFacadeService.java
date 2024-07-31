@@ -33,9 +33,9 @@ public class ValidationFacadeService {
         if(!email.contains("@"))
             throw new BusinessException(ErrorMessage.INVALID_FIELD, "Email must contain '@' symbol");
 
-        String alphaNumericAtPattern = "^[A-Za-z0-9]+@[A-Za-z0-9.]+$";
+        String alphaNumericAtPattern = "^[A-Za-z0-9]+@[A-Za-z0-9]+\\.[A-Za-z0-9]+$";
         if (!email.matches(alphaNumericAtPattern)) {
-            throw new BusinessException(ErrorMessage.INVALID_FIELD, "Email must contain only alphanumeric characters and '@' in between");
+            throw new BusinessException(ErrorMessage.INVALID_FIELD, "Email must contain only alphanumeric characters and '@' in between.");
         }
     }
 

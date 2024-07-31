@@ -45,18 +45,18 @@ public class PixKeySpecification {
         };
     }
 
-    public static Specification<PixKey> accountNumberIsLike(Integer accountNumber) {
+    public static Specification<PixKey> accountNumberIsLike(String accountNumber) {
         return (Root<PixKey> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
-            if (accountNumber != null) {
+            if (Strings.isNotBlank(accountNumber)) {
                 return cb.equal(root.get("holder").get("holderId").get("accountNumber"), accountNumber);
             }
             return cb.conjunction();
         };
     }
 
-    public static Specification<PixKey> agencyNumberIsLike(Integer agencyNumber) {
+    public static Specification<PixKey> agencyNumberIsLike(String agencyNumber) {
         return (Root<PixKey> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
-            if (agencyNumber != null) {
+            if (Strings.isNotBlank(agencyNumber)) {
                 return cb.equal(root.get("holder").get("holderId").get("agencyNumber"), agencyNumber);
             }
             return cb.conjunction();

@@ -55,7 +55,7 @@ class PixKeyServiceTest {
         when(holderService.findHolderByIdOrElseThrow(any(), any())).thenReturn(holder);
         when(pixKeyRepository.saveAndFlush(any())).thenReturn(pixKey);
 
-        PixKeyRequestDTO pixKeyRequestDTO = new PixKeyRequestDTO("abcdaleatorio","aleatorio","corrente",12,123123,"Joao","Silva");
+        PixKeyRequestDTO pixKeyRequestDTO = new PixKeyRequestDTO("abcdaleatorio","aleatorio","corrente","12","123123","Joao","Silva");
         pixKeyService.includeKey(pixKeyRequestDTO);
 
         verify(pixKeyRepository).saveAndFlush(any());

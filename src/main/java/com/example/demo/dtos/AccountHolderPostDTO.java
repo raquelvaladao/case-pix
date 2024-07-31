@@ -27,10 +27,10 @@ public class AccountHolderPostDTO {
     private String accountType;
 
     @NumberDigits(max = 4)
-    private Integer agencyNumber;
+    private String agencyNumber;
 
     @NumberDigits(max = 8)
-    private Integer accountNumber;
+    private String accountNumber;
 
     @NotEmpty
     @Size(max = 30)

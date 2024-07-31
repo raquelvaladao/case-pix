@@ -17,6 +17,6 @@ public interface HolderRepository extends JpaRepository<Holder, HolderId> {
             "ON h.NUMERO_AGENCIA = p.NUMERO_AGENCIA AND h.NUMERO_CONTA = p.NUMERO_CONTA " +
             "WHERE h.NUMERO_AGENCIA = :agencyNumber AND h.NUMERO_CONTA = :accountNumber " +
             "GROUP BY h.TIPO_PESSOA", nativeQuery = true)
-    HolderKeyCountView getKeysCountAndPersonType(@Param("agencyNumber") Integer agencyNumber, @Param("accountNumber") Integer accountNumber);
+    HolderKeyCountView getKeysCountAndPersonType(@Param("agencyNumber") String agencyNumber, @Param("accountNumber") String accountNumber);
 
 }

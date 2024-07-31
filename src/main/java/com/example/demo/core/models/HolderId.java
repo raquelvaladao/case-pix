@@ -17,8 +17,8 @@ import java.io.Serializable;
 public class HolderId implements Serializable {
 
     @Column(name = "NUMERO_AGENCIA")
-    private Integer agencyNumber;
+    private String agencyNumber;
 
     @Column(name = "NUMERO_CONTA")
-    private Integer accountNumber;
+    private String accountNumber;
 }

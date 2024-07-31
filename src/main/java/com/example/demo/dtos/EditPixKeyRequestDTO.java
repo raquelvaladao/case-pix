@@ -24,10 +24,10 @@ public class EditPixKeyRequestDTO {
     private String accountType;
 
     @NumberDigits(max = 4)
-    private Integer agencyNumber;
+    private String agencyNumber;
 
     @NumberDigits(max = 8)
-    private Integer accountNumber;
+    private String accountNumber;
 
     @NotEmpty
     @Size(min = 1, max = 30)

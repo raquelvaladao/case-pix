@@ -11,7 +11,7 @@ import java.lang.annotation.*;
 @Target( { ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface NumberDigits {
-    String message() default "Invalid number size, max is {max}";
+    String message() default "Invalid number size, max digits is {max} and numeric only";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
     int max();

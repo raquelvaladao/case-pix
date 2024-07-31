@@ -18,8 +18,8 @@ public class KeySearchCriteriaRequestDTO {
     private String keyId;
     private String keyType;
     private String holderName;
-    private Integer agencyNumber;
-    private Integer accountNumber;
+    private String agencyNumber;
+    private String accountNumber;
     private String inclusionDate;
 
     public boolean isAnyNonIdFieldPresent(){

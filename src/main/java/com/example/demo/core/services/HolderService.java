@@ -42,7 +42,7 @@ public class HolderService {
 
     }
 
-    public void checkIfHolderReachedKeysLimit(Integer agencyNumber, Integer accountNumber) {
+    public void checkIfHolderReachedKeysLimit(String agencyNumber, String accountNumber) {
         HolderKeyCountView holderKeysCount = holderRepository.getKeysCountAndPersonType(agencyNumber, accountNumber);
 
         if(holderKeysCount == null)
@@ -52,7 +52,7 @@ public class HolderService {
             throw new BusinessException(ErrorMessage.REACHED_LIMIT, "Holder reached limit for pix keys addition");
     }
 
-    public Holder findHolderByIdOrElseThrow(Integer agencyNumber, Integer accountNumber) {
+    public Holder findHolderByIdOrElseThrow(String agencyNumber, String accountNumber) {
         return holderRepository.findById(new HolderId(agencyNumber, accountNumber))
                 .orElseThrow(() -> new BusinessException(ErrorMessage.NOT_FOUND, "Holder not found"));
     }

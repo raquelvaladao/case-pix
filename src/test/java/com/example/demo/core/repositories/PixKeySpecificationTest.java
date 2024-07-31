@@ -25,8 +25,8 @@ class PixKeySpecificationTest {
         criteria.setKeyId("key123");
         criteria.setKeyType("aleatorio");
         criteria.setHolderName("Joao");
-        criteria.setAccountNumber(123123);
-        criteria.setAgencyNumber(12);
+        criteria.setAccountNumber("123123");
+        criteria.setAgencyNumber("12");
         criteria.setInclusionDate(LocalDate.now().toString());
 
         Specification<PixKey> specification = PixKeySpecification.buildDynamicQueryActiveKeys(criteria);
@@ -145,11 +145,11 @@ class PixKeySpecificationTest {
 
     @Test
     public void testAccountNumberIsLikeNotBlank() {
-        Integer accountNumber = 123;
+        String accountNumber = "123";
         Root<PixKey> root = Mockito.mock(Root.class);
         CriteriaQuery<?> query = Mockito.mock(CriteriaQuery.class);
         CriteriaBuilder cb = Mockito.mock(CriteriaBuilder.class);
-        Path<Integer> accountNumberPath = Mockito.mock(Path.class);
+        Path<String> accountNumberPath = Mockito.mock(Path.class);
         Path<?> holderPath = Mockito.mock(Path.class);
         Path<?> holderIdPath = Mockito.mock(Path.class);
         Predicate predicate = Mockito.mock(Predicate.class);
@@ -167,11 +167,11 @@ class PixKeySpecificationTest {
 
     @Test
     public void testAgencyNumberIsLikeNotBlank() {
-        Integer agencyNumber = 123;
+        String agencyNumber = "123";
         Root<PixKey> root = Mockito.mock(Root.class);
         CriteriaQuery<?> query = Mockito.mock(CriteriaQuery.class);
         CriteriaBuilder cb = Mockito.mock(CriteriaBuilder.class);
-        Path<Integer> accountNumberPath = Mockito.mock(Path.class);
+        Path<String> accountNumberPath = Mockito.mock(Path.class);
         Path<?> holderPath = Mockito.mock(Path.class);
         Path<?> holderIdPath = Mockito.mock(Path.class);
         Predicate predicate = Mockito.mock(Predicate.class);
