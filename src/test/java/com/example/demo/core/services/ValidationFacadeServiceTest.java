@@ -7,42 +7,17 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.stream.Stream;
-
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doNothing;
 
 
 @ExtendWith(MockitoExtension.class)
 class ValidationFacadeServiceTest {
 
-    @Mock
-    private KeyValidationService keyValidationService;
 
     @InjectMocks
     private ValidationFacadeService validationFacadeService;
-
-    @ParameterizedTest
-    @MethodSource(value = "validPairs")
-    void validatePairsSuccessfully(String keyType, String keyValue) {
-        doNothing().when(keyValidationService).checkIfKeyExists(any());
-        doNothing().when(keyValidationService).checkIfHolderReachedKeysLimit(any(), any());
-
-        Assertions.assertDoesNotThrow(() -> validationFacadeService.validate(keyType, keyValue, 123123, 12));
-    }
-
-    @ParameterizedTest
-    @MethodSource(value = "invalidPairs")
-    void validateInvalidPairsSuccessfully(String keyType, String keyValue) {
-        doNothing().when(keyValidationService).checkIfKeyExists(any());
-        doNothing().when(keyValidationService).checkIfHolderReachedKeysLimit(any(), any());
-
-        Assertions.assertThrows(BusinessException.class,
-                () -> validationFacadeService.validate(keyType, keyValue, 123123, 12));
-    }
 
     private static Stream<Arguments> validPairs() {
         return Stream.of(
@@ -73,6 +48,19 @@ class ValidationFacadeServiceTest {
                 Arguments.of("aleatorio", "maisde36caracteresaaaaabbbbbbbbbccccccccddd"),
                 Arguments.of("aleatorio", "Not%Alphnumeric$")
         );
+    }
+
+    @ParameterizedTest
+    @MethodSource(value = "validPairs")
+    void validatePairsSuccessfully(String keyType, String keyValue) {
+        Assertions.assertDoesNotThrow(() -> validationFacadeService.validate(keyType, keyValue));
+    }
+
+    @ParameterizedTest
+    @MethodSource(value = "invalidPairs")
+    void validateInvalidPairsSuccessfully(String keyType, String keyValue) {
+        Assertions.assertThrows(BusinessException.class,
+                () -> validationFacadeService.validate(keyType, keyValue));
     }
 
 }

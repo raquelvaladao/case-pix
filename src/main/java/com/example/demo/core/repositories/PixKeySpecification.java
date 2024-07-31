@@ -13,6 +13,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class PixKeySpecification {
@@ -69,7 +70,7 @@ public class PixKeySpecification {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                     LocalDate localDate = LocalDate.parse(inclusionDate, formatter);
                     LocalDateTime startOfDay = localDate.atStartOfDay();
-                    LocalDateTime endOfDay = localDate.atTime(23, 59, 59, 999999999);
+                    LocalDateTime endOfDay = localDate.atTime(LocalTime.MAX);
                     return cb.between(root.get("inclusionDate"), startOfDay, endOfDay);
                 } catch (RuntimeException e){
                     throw new BusinessException(ErrorMessage.INVALID_FIELD, "Date should be in the format dd/MM/yyyy");

@@ -18,13 +18,8 @@ public class ValidationFacadeService {
 
     public static final int MAX_RANDOM_KEY_SIZE = 36;
 
-    private KeyValidationService keyValidationService;
-
-    public void validate(String keyType, String keyValue, Integer accountNumber, Integer agencyNumber) {
+    public void validate(String keyType, String keyValue) {
         KeyType type = KeyType.fromDescription(keyType);
-
-        keyValidationService.checkIfKeyExists(keyValue);
-        keyValidationService.checkIfHolderReachedKeysLimit(agencyNumber, accountNumber);
 
         switch (type) {
             case EMAIL -> validateEmail(keyValue);

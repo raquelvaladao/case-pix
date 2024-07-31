@@ -10,9 +10,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
 class PixKeySpecificationTest {
@@ -45,6 +47,24 @@ class PixKeySpecificationTest {
         Mockito.when(cb.equal(path, keyId)).thenReturn(predicate);
 
         Specification<PixKey> specification = PixKeySpecification.keyIdIsLike(keyId);
+        Predicate resultPredicate = specification.toPredicate(root, query, cb);
+
+        assertNotNull(resultPredicate);
+    }
+
+    @Test
+    public void testInclusionDateIsLikeNotBlank() {
+        String inclusionDate = "12/05/2024";
+        Root<PixKey> root = Mockito.mock(Root.class);
+        CriteriaQuery<?> query = Mockito.mock(CriteriaQuery.class);
+        CriteriaBuilder cb = Mockito.mock(CriteriaBuilder.class);
+        Path<String> path = Mockito.mock(Path.class);
+
+        Mockito.when(root.get("inclusionDate")).thenReturn((Path) path);
+        Mockito.when(cb.between(any(Path.class), any(LocalDateTime.class), any(LocalDateTime.class)))
+                .thenReturn(Mockito.mock(Predicate.class));
+
+        Specification<PixKey> specification = PixKeySpecification.inclusionDateIsLike(inclusionDate);
         Predicate resultPredicate = specification.toPredicate(root, query, cb);
 
         assertNotNull(resultPredicate);
@@ -103,7 +123,7 @@ class PixKeySpecificationTest {
     }
 
     @Test
-    public void testHolderNameIsLike_NotBlank() {
+    public void testHolderNameIsLikeNotBlank() {
         // Arrange
         String holderName = "testHolder";
         Root<PixKey> root = Mockito.mock(Root.class);

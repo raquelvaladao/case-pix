@@ -51,7 +51,7 @@ class PixKeyServiceTest {
         PixKey pixKey = new PixKey();
         pixKey.setKeyId(UUID.randomUUID().toString());
 
-        doNothing().when(validationFacadeService).validate(any(), any(), any(), any());
+        doNothing().when(validationFacadeService).validate(any(), any());
         when(holderService.findHolderByIdOrElseThrow(any(), any())).thenReturn(holder);
         when(pixKeyRepository.saveAndFlush(any())).thenReturn(pixKey);
 

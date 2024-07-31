@@ -37,7 +37,10 @@ public class PixKeyService {
     private PixKeyRepository pixKeyRepository;
 
     public PixKeyIdDTO includeKey(PixKeyRequestDTO request) {
-        validationFacadeService.validate(request.getKeyType(), request.getKeyValue(), request.getAccountNumber(), request.getAgencyNumber());
+        this.checkIfKeyExists(request.getKeyValue());
+        holderService.checkIfHolderReachedKeysLimit(request.getAgencyNumber(), request.getAccountNumber());
+
+        validationFacadeService.validate(request.getKeyType(), request.getKeyValue());
 
         Holder holder = holderService.findHolderByIdOrElseThrow(request.getAgencyNumber(), request.getAccountNumber());
         PixKey entity = buildPixKeyEntity(request, holder);
@@ -76,18 +79,14 @@ public class PixKeyService {
         return key;
     }
 
+    public void checkIfKeyExists(String keyValue) {
+        if (pixKeyRepository.countByValue(keyValue) > 0)
+            throw new BusinessException(ErrorMessage.DUPLICATE, "Pix key with this value already exists");
+    }
+
     private PixKey findKeyByIdOrElseThrow(String keyId) {
         return pixKeyRepository.findById(keyId)
                 .orElseThrow(() -> new BusinessException(ErrorMessage.NOT_FOUND, "Key not found"));
-    }
-
-    private PixKey buildPixKeyEntity(PixKeyRequestDTO request, Holder holder) {
-        PixKey entity = new PixKey();
-        entity.setKeyType(request.getKeyType());
-        entity.setKeyValue(request.getKeyValue());
-
-        entity.setHolder(holder);
-        return entity;
     }
 
     public List<PixKeyResponseDTO> filter(KeySearchCriteriaRequestDTO criteria) {
@@ -114,6 +113,8 @@ public class PixKeyService {
         PixKey activeKeyById = this.getActiveKeyById(request.getKeyId());
         Holder newHolder = holderService.findHolderByIdOrElseThrow(request.getAgencyNumber(), request.getAccountNumber());
 
+        holderService.checkIfHolderReachedKeysLimit(newHolder.getHolderId().getAgencyNumber(), newHolder.getHolderId().getAccountNumber());
+
         log.info("Setting key to holder {} {} ({})", request.getHolderName(), request.getHolderSurname(), request.getAccountType());
         activeKeyById.setHolder(newHolder);
         activeKeyById.setInclusionDate(OffsetDateTime.now());
@@ -122,6 +123,15 @@ public class PixKeyService {
         return buildPixKeyResponse(activeKeyById, DD_MM_YYYY_TIME, null);
     }
 
+
+    private PixKey buildPixKeyEntity(PixKeyRequestDTO request, Holder holder) {
+        PixKey entity = new PixKey();
+        entity.setKeyType(request.getKeyType());
+        entity.setKeyValue(request.getKeyValue());
+
+        entity.setHolder(holder);
+        return entity;
+    }
 
     private PixKeyResponseDTO buildPixKeyResponse(PixKey entity, String dateFormat, String defaultValue) {
         DateTimeFormatter df = new DateTimeFormatterBuilder().appendPattern(dateFormat).toFormatter();
