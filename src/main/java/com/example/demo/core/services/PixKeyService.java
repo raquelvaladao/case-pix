@@ -1,6 +1,5 @@
 package com.example.demo.core.services;
 
-import ch.qos.logback.core.util.StringUtil;
 import com.example.demo.core.converters.PixKeyEntityConverter;
 import com.example.demo.core.converters.PixKeyResponseConverter;
 import com.example.demo.core.enums.ErrorMessage;
@@ -18,8 +17,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -92,7 +89,7 @@ public class PixKeyService {
     }
 
     public List<PixKeyResponseDTO> filter(KeySearchCriteriaRequestDTO criteria) {
-        if (isNotBlank(criteria.getKeyId()) && criteria.isAnyNonIdFieldPresent())
+        if (isNotBlank(criteria.getKeyId()) && criteria.checkIsAnyNonIdFieldPresent())
             throw new BusinessException(ErrorMessage.INVALID_CRITERIA, "If key id is passed, you cannot use other filters");
 
         if (isNotBlank(criteria.getKeyId()))

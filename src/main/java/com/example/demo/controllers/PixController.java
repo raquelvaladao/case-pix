@@ -8,7 +8,6 @@ import com.example.demo.dtos.PixKeyIdDTO;
 import com.example.demo.dtos.PixKeyRequestDTO;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -24,7 +23,7 @@ public class PixController {
     private PixKeyService pixKeyService;
 
     @PostMapping
-    public ResponseEntity<Object> addPixKey(@Valid @RequestBody PixKeyRequestDTO request) {
+    public ResponseEntity<Object> addKey(@Valid @RequestBody PixKeyRequestDTO request) {
         return ResponseEntity.status(HttpStatus.OK).body(pixKeyService.includeKey(request));
     }
 

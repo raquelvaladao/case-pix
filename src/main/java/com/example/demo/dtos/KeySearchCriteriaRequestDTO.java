@@ -22,7 +22,7 @@ public class KeySearchCriteriaRequestDTO {
     private String accountNumber;
     private String inclusionDate;
 
-    public boolean isAnyNonIdFieldPresent(){
+    public boolean checkIsAnyNonIdFieldPresent(){
         List<Object> nonIdFields = Arrays.asList(
                 this.getAgencyNumber(),
                 this.getAccountNumber(),
