@@ -47,7 +47,7 @@ class HolderServiceTest {
     void findHolderSuccessfully(){
         when(holderRepository.findById(any())).thenReturn(Optional.of(new Holder()));
 
-        Holder holderById = holderService.findHolderById(12, 123123);
+        Holder holderById = holderService.findHolderByIdOrElseThrow(12, 123123);
 
         assertNotNull(holderById);
     }
@@ -56,7 +56,7 @@ class HolderServiceTest {
     void shouldNotFindHolder(){
         when(holderRepository.findById(any())).thenReturn(Optional.empty());
 
-        assertThrows(BusinessException.class, () -> holderService.findHolderById(12, 123123));
+        assertThrows(BusinessException.class, () -> holderService.findHolderByIdOrElseThrow(12, 123123));
     }
 
 

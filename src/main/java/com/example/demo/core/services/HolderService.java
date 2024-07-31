@@ -24,23 +24,19 @@ public class HolderService {
     private final ModelMapper mapper;
 
     public void createHolder(AccountHolderPostDTO holderRequest) {
-        try {
-            Optional<Holder> holder = holderRepository.findById(new HolderId(holderRequest.getAgencyNumber(), holderRequest.getAccountNumber()));
-            if (holder.isPresent())
-                throw new BusinessException(ErrorMessage.DUPLICATE, "Holder with this account already exists");
+        Optional<Holder> holder = holderRepository.findById(new HolderId(holderRequest.getAgencyNumber(), holderRequest.getAccountNumber()));
+        if (holder.isPresent())
+            throw new BusinessException(ErrorMessage.DUPLICATE, "Holder with this account already exists");
 
-            log.info("Saving account holder data with holder name {} {}", holderRequest.getHolderName(), holderRequest.getHolderSurname());
+        log.info("Saving account holder data with holder name {} {}", holderRequest.getHolderName(), holderRequest.getHolderSurname());
 
-            Holder entity = toEntity(holderRequest);
+        Holder entity = toEntity(holderRequest);
 
-            holderRepository.save(entity);
-        } catch (RuntimeException e) {
-            log.info("Error creating account holder: {}", e.getMessage());
-            throw new BusinessException(ErrorMessage.INTERNAL_ERROR, "Database saving operation error");
-        }
+        holderRepository.save(entity);
+
     }
 
-    public Holder findHolderById(Integer agencyNumber, Integer accountNumber) {
+    public Holder findHolderByIdOrElseThrow(Integer agencyNumber, Integer accountNumber) {
         return holderRepository.findById(new HolderId(agencyNumber, accountNumber))
                 .orElseThrow(() -> new BusinessException(ErrorMessage.NOT_FOUND, "Holder not found"));
     }

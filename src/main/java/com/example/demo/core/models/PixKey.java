@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.UuidGenerator;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Entity
 @Setter
@@ -29,10 +29,10 @@ public class PixKey {
     private Boolean inactive = false;
 
     @Column(name = "HORA_INCLUSAO", nullable = false)
-    private LocalDateTime inclusionDate = LocalDateTime.now();
+    private OffsetDateTime inclusionDate = OffsetDateTime.now();
 
     @Column(name = "HORA_INATIVACAO")
-    private LocalDateTime deactivationDate;
+    private OffsetDateTime deactivationDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({

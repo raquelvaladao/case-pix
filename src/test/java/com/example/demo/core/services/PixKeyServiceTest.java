@@ -52,7 +52,7 @@ class PixKeyServiceTest {
         pixKey.setKeyId(UUID.randomUUID().toString());
 
         doNothing().when(validationFacadeService).validate(any(), any(), any(), any());
-        when(holderService.findHolderById(any(), any())).thenReturn(holder);
+        when(holderService.findHolderByIdOrElseThrow(any(), any())).thenReturn(holder);
         when(pixKeyRepository.saveAndFlush(any())).thenReturn(pixKey);
 
         PixKeyRequestDTO pixKeyRequestDTO = new PixKeyRequestDTO("abcdaleatorio","aleatorio","corrente",12,123123,"Joao","Silva");
@@ -158,7 +158,7 @@ class PixKeyServiceTest {
         PixKey entity = Mocks.buildPixKeyEntity();
 
         when(pixKeyRepository.findById(any())).thenReturn(Optional.of(entity));
-        when(holderService.findHolderById(any(), any())).thenReturn(Mocks.buildHolderEntity());
+        when(holderService.findHolderByIdOrElseThrow(any(), any())).thenReturn(Mocks.buildHolderEntity());
         when(pixKeyRepository.save(any())).thenReturn(entity);
 
         PixKeyResponseDTO editedKey = pixKeyService.editKey(new EditPixKeyRequestDTO());

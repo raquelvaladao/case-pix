@@ -15,7 +15,7 @@ import org.apache.logging.log4j.util.Strings;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.List;
@@ -39,7 +39,7 @@ public class PixKeyService {
     public PixKeyIdDTO includeKey(PixKeyRequestDTO request) {
         validationFacadeService.validate(request.getKeyType(), request.getKeyValue(), request.getAccountNumber(), request.getAgencyNumber());
 
-        Holder holder = holderService.findHolderById(request.getAgencyNumber(), request.getAccountNumber());
+        Holder holder = holderService.findHolderByIdOrElseThrow(request.getAgencyNumber(), request.getAccountNumber());
         PixKey entity = buildPixKeyEntity(request, holder);
 
         log.info("Saving key to holder {} {}", request.getHolderName(), request.getHolderSurname());
@@ -55,10 +55,10 @@ public class PixKeyService {
     public PixKeyResponseDTO deactivateKey(PixKeyIdDTO request) {
         PixKey entity = findKeyByIdOrElseThrow(request.getKeyId());
 
-        if(entity.getInactive())
+        if (entity.getInactive())
             throw new BusinessException(ErrorMessage.DUPLICATE, "Key is already deactivated");
 
-        entity.setDeactivationDate(LocalDateTime.now());
+        entity.setDeactivationDate(OffsetDateTime.now());
         entity.setInactive(true);
 
         pixKeyRepository.save(entity);
@@ -70,7 +70,7 @@ public class PixKeyService {
     public PixKey getActiveKeyById(String keyId) {
         PixKey key = findKeyByIdOrElseThrow(keyId);
 
-        if(key.getInactive())
+        if (key.getInactive())
             throw new BusinessException(ErrorMessage.INACTIVE_KEY, "Cannot query inactive key");
 
         return key;
@@ -91,17 +91,18 @@ public class PixKeyService {
     }
 
     public List<PixKeyResponseDTO> filter(KeySearchCriteriaRequestDTO criteria) {
-        if(isNotBlank(criteria.getKeyId()) && criteria.isAnyNonIdFieldPresent())
+        if (isNotBlank(criteria.getKeyId()) && criteria.isAnyNonIdFieldPresent())
             throw new BusinessException(ErrorMessage.INVALID_CRITERIA, "If key id is passed, you cannot use other filters");
 
-        if(isNotBlank(criteria.getKeyId()))
+        if (isNotBlank(criteria.getKeyId()))
             return Stream.of(this.getActiveKeyById(criteria.getKeyId()))
                     .map(e -> this.buildPixKeyResponse(e, DD_MM_YYYY, Strings.EMPTY))
                     .collect(Collectors.toList());
 
         Specification<PixKey> dynamicQuery = PixKeySpecification.buildDynamicQueryActiveKeys(criteria);
+
         List<PixKey> result = pixKeyRepository.findAll(dynamicQuery);
-        if(result.isEmpty())
+        if (result.isEmpty())
             throw new EntityNotFoundException();
 
         return result.stream()
@@ -111,11 +112,11 @@ public class PixKeyService {
 
     public PixKeyResponseDTO editKey(EditPixKeyRequestDTO request) {
         PixKey activeKeyById = this.getActiveKeyById(request.getKeyId());
-        Holder newHolder = holderService.findHolderById(request.getAgencyNumber(), request.getAccountNumber());
+        Holder newHolder = holderService.findHolderByIdOrElseThrow(request.getAgencyNumber(), request.getAccountNumber());
 
         log.info("Setting key to holder {} {} ({})", request.getHolderName(), request.getHolderSurname(), request.getAccountType());
         activeKeyById.setHolder(newHolder);
-        activeKeyById.setInclusionDate(LocalDateTime.now());
+        activeKeyById.setInclusionDate(OffsetDateTime.now());
         pixKeyRepository.save(activeKeyById);
 
         return buildPixKeyResponse(activeKeyById, DD_MM_YYYY_TIME, null);

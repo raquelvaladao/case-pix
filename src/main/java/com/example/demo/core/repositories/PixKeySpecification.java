@@ -1,6 +1,8 @@
 package com.example.demo.core.repositories;
 
 
+import com.example.demo.core.enums.ErrorMessage;
+import com.example.demo.core.exceptions.BusinessException;
 import com.example.demo.core.models.PixKey;
 import com.example.demo.dtos.KeySearchCriteriaRequestDTO;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -8,6 +10,10 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.data.jpa.domain.Specification;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class PixKeySpecification {
 
@@ -59,7 +65,15 @@ public class PixKeySpecification {
     public static Specification<PixKey> inclusionDateIsLike(String inclusionDate) {
         return (Root<PixKey> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
             if (inclusionDate != null) {
-                return cb.like(root.get("inclusionDate").as(String.class), inclusionDate + "%");
+                try {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    LocalDate localDate = LocalDate.parse(inclusionDate, formatter);
+                    LocalDateTime startOfDay = localDate.atStartOfDay();
+                    LocalDateTime endOfDay = localDate.atTime(23, 59, 59, 999999999);
+                    return cb.between(root.get("inclusionDate"), startOfDay, endOfDay);
+                } catch (RuntimeException e){
+                    throw new BusinessException(ErrorMessage.INVALID_FIELD, "Date should be in the format dd/MM/yyyy");
+                }
             }
             return cb.conjunction();
         };
