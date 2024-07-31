@@ -1,6 +1,8 @@
 package com.example.demo.core.services;
 
 import ch.qos.logback.core.util.StringUtil;
+import com.example.demo.core.converters.PixKeyEntityConverter;
+import com.example.demo.core.converters.PixKeyResponseConverter;
 import com.example.demo.core.enums.ErrorMessage;
 import com.example.demo.core.exceptions.BusinessException;
 import com.example.demo.core.models.Holder;
@@ -37,13 +39,13 @@ public class PixKeyService {
     private PixKeyRepository pixKeyRepository;
 
     public PixKeyIdDTO includeKey(PixKeyRequestDTO request) {
-        this.checkIfKeyExists(request.getKeyValue());
+        this.checkIfKeyExistsThenThrow(request.getKeyValue());
         holderService.checkIfHolderReachedKeysLimit(request.getAgencyNumber(), request.getAccountNumber());
 
         validationFacadeService.validate(request.getKeyType(), request.getKeyValue());
 
         Holder holder = holderService.findHolderByIdOrElseThrow(request.getAgencyNumber(), request.getAccountNumber());
-        PixKey entity = buildPixKeyEntity(request, holder);
+        PixKey entity = PixKeyEntityConverter.convertToEntity(request, holder);
 
         log.info("Saving key to holder {} {}", request.getHolderName(), request.getHolderSurname());
         pixKeyRepository.saveAndFlush(entity);
@@ -67,7 +69,7 @@ public class PixKeyService {
         pixKeyRepository.save(entity);
         log.info("Key deactivated successfully");
 
-        return buildPixKeyResponse(entity, DD_MM_YYYY_TIME, Strings.EMPTY);
+        return PixKeyResponseConverter.convertToResponse(entity, DD_MM_YYYY_TIME, Strings.EMPTY);
     }
 
     public PixKey getActiveKeyById(String keyId) {
@@ -79,7 +81,7 @@ public class PixKeyService {
         return key;
     }
 
-    public void checkIfKeyExists(String keyValue) {
+    public void checkIfKeyExistsThenThrow(String keyValue) {
         if (pixKeyRepository.countByValue(keyValue) > 0)
             throw new BusinessException(ErrorMessage.DUPLICATE, "Pix key with this value already exists");
     }
@@ -95,7 +97,7 @@ public class PixKeyService {
 
         if (isNotBlank(criteria.getKeyId()))
             return Stream.of(this.getActiveKeyById(criteria.getKeyId()))
-                    .map(e -> this.buildPixKeyResponse(e, DD_MM_YYYY, Strings.EMPTY))
+                    .map(e -> PixKeyResponseConverter.convertToResponse(e, DD_MM_YYYY, Strings.EMPTY))
                     .collect(Collectors.toList());
 
         Specification<PixKey> dynamicQuery = PixKeySpecification.buildDynamicQueryActiveKeys(criteria);
@@ -105,47 +107,22 @@ public class PixKeyService {
             throw new EntityNotFoundException();
 
         return result.stream()
-                .map(e -> this.buildPixKeyResponse(e, DD_MM_YYYY, Strings.EMPTY))
+                .map(e -> PixKeyResponseConverter.convertToResponse(e, DD_MM_YYYY, Strings.EMPTY))
                 .collect(Collectors.toList());
     }
 
     public PixKeyResponseDTO editKey(EditPixKeyRequestDTO request) {
         PixKey activeKeyById = this.getActiveKeyById(request.getKeyId());
-        Holder newHolder = holderService.findHolderByIdOrElseThrow(request.getAgencyNumber(), request.getAccountNumber());
+        holderService.checkIfHolderReachedKeysLimit(request.getAgencyNumber(), request.getAccountNumber());
 
-        holderService.checkIfHolderReachedKeysLimit(newHolder.getHolderId().getAgencyNumber(), newHolder.getHolderId().getAccountNumber());
+        Holder newHolder = holderService.findHolderByIdOrElseThrow(request.getAgencyNumber(), request.getAccountNumber());
 
         log.info("Setting key to holder {} {} ({})", request.getHolderName(), request.getHolderSurname(), request.getAccountType());
         activeKeyById.setHolder(newHolder);
         activeKeyById.setInclusionDate(OffsetDateTime.now());
         pixKeyRepository.save(activeKeyById);
 
-        return buildPixKeyResponse(activeKeyById, DD_MM_YYYY_TIME, null);
+        return PixKeyResponseConverter.convertToResponse(activeKeyById, DD_MM_YYYY_TIME, null);
     }
 
-
-    private PixKey buildPixKeyEntity(PixKeyRequestDTO request, Holder holder) {
-        PixKey entity = new PixKey();
-        entity.setKeyType(request.getKeyType());
-        entity.setKeyValue(request.getKeyValue());
-
-        entity.setHolder(holder);
-        return entity;
-    }
-
-    private PixKeyResponseDTO buildPixKeyResponse(PixKey entity, String dateFormat, String defaultValue) {
-        DateTimeFormatter df = new DateTimeFormatterBuilder().appendPattern(dateFormat).toFormatter();
-
-        return PixKeyResponseDTO.builder()
-                .keyId(entity.getKeyId())
-                .keyValue(entity.getKeyValue())
-                .keyType(entity.getKeyType())
-                .holderName(entity.getHolder().getHolderName())
-                .holderSurname(StringUtil.nullStringToEmpty(entity.getHolder().getHolderSurname()))
-                .agencyNumber(entity.getHolder().getHolderId().getAgencyNumber())
-                .accountNumber(entity.getHolder().getHolderId().getAccountNumber())
-                .deactivationDate(entity.getDeactivationDate() == null ? defaultValue : df.format(entity.getDeactivationDate()))
-                .inclusionDate(df.format(entity.getInclusionDate()))
-                .build();
-    }
 }

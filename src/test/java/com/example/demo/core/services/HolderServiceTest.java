@@ -10,7 +10,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
 
 import java.util.Optional;
 
@@ -25,9 +24,6 @@ class HolderServiceTest {
     @Mock
     private HolderRepository holderRepository;
 
-    @Mock
-    private ModelMapper mapper;
-
     @InjectMocks
     private HolderService holderService;
 
@@ -35,12 +31,12 @@ class HolderServiceTest {
     void createHolderSuccessfully() {
         Holder entity = Mocks.buildHolderEntity();
 
-        when(mapper.map(any(), any())).thenReturn(entity);
+        when(holderRepository.findById(any())).thenReturn(Optional.empty());
         when(holderRepository.save(any())).thenReturn(entity);
 
         holderService.createHolder(new AccountHolderPostDTO());
 
-        verify(holderRepository).save(entity);
+        verify(holderRepository).save(any());
     }
 
     @Test
@@ -69,9 +65,6 @@ class HolderServiceTest {
 
     @Test
     void shouldThrowExceptionWhenCreateHolder() {
-        Holder entity = Mocks.buildHolderEntity();
-
-        when(mapper.map(any(), any())).thenReturn(entity);
         doThrow(RuntimeException.class).when(holderRepository).save(any());
 
         assertThrows(RuntimeException.class, () -> holderService.createHolder(new AccountHolderPostDTO()));
