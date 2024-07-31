@@ -164,4 +164,15 @@ class PixKeyServiceTest {
         PixKeyResponseDTO editedKey = pixKeyService.editKey(new EditPixKeyRequestDTO());
         assertNotNull(editedKey);
     }
+
+    @Test
+    void shouldReturnKeyForItselfSuccessfully() {
+        PixKey entity = Mocks.buildPixKeyEntity();
+
+        when(pixKeyRepository.findById(any())).thenReturn(Optional.of(entity));
+        when(holderService.findHolderByIdOrElseThrow(any(), any())).thenReturn(entity.getHolder());
+
+        PixKeyResponseDTO editedKey = pixKeyService.editKey(new EditPixKeyRequestDTO());
+        assertNotNull(editedKey);
+    }
 }

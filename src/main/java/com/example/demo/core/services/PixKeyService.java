@@ -110,9 +110,12 @@ public class PixKeyService {
 
     public PixKeyResponseDTO editKey(EditPixKeyRequestDTO request) {
         PixKey activeKeyById = this.getActiveKeyById(request.getKeyId());
-        holderService.checkIfHolderReachedKeysLimit(request.getAgencyNumber(), request.getAccountNumber());
-
         Holder newHolder = holderService.findHolderByIdOrElseThrow(request.getAgencyNumber(), request.getAccountNumber());
+
+        if(activeKeyById.getHolder().getHolderId() == newHolder.getHolderId())
+            return PixKeyResponseConverter.convertToResponse(activeKeyById, DD_MM_YYYY_TIME, null);
+
+        holderService.checkIfHolderReachedKeysLimit(request.getAgencyNumber(), request.getAccountNumber());
 
         log.info("Setting key to holder {} {} ({})", request.getHolderName(), request.getHolderSurname(), request.getAccountType());
         activeKeyById.setHolder(newHolder);
